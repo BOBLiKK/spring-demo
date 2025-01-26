@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Request</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+  <h1 class="text-center">Create a New Request</h1>
+  <div class="d-flex justify-content-between mb-3">
+    <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+  </div>
+  <form action="/user/save_request" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" name="firstName" class="form-control" required>
+    </div>
+    <div class="form-group">
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" name="lastName" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="dateOfBirth" class="form-label">Date of Birth</label>
+      <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" required>
+    </div>
+    <div class="mb-3">
+      <label for="nationality" class="form-label">Nationality</label>
+      <input type="text" class="form-control" id="nationality" name="nationality" required>
+    </div>
+    <div class="mb-3">
+      <label for="reasonForWanted" class="form-label">Reason for Request</label>
+      <textarea class="form-control" id="reasonForWanted" name="reasonForWanted" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="reward" class="form-label">Reward Amount</label>
+      <input type="number" class="form-control" id="reward" name="reward" min="0" step="0.01">
+    </div>
+    <div class="form-group">
+      <label for="photoFile">Photo</label>
+      <input type="file" id="photoFile" name="photoFile" class="form-control">
+    </div>
+    <div class="mb-3">
+      <label for="comment" class="form-label">Comment</label>
+      <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+    </div>
+    <div class="d-flex justify-content-between">
+      <a href="/user/requests" class="btn btn-secondary">Cancel</a>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
