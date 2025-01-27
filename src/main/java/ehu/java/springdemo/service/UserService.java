@@ -28,4 +28,11 @@ public class UserService implements org.springframework.security.core.userdetail
                 .build();
     }
 
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    public User findUserByLogin(String login) {
+        return userRepository.findByLogin(login).orElse(null);
+    }
 }

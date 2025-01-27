@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RequestService {
@@ -21,11 +22,15 @@ public class RequestService {
         return requestRepository.findByUserId(userId); // Обновлен вызов метода
     }
 
-    public List<Request> findApprovedRequests() {
-        return requestRepository.findByStatus(Request.RequestStatus.APPROVED);
-    }
-
     public void saveRequest(Request request) {
         requestRepository.save(request);
+    }
+
+    public List<Request> findAllRequests(){
+        return requestRepository.findAll();
+    }
+
+    public Optional<Request> findRequestById(Long id) {
+        return requestRepository.findById(id);
     }
 }

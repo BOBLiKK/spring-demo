@@ -9,5 +9,4 @@ import java.util.List;
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
     List<Request> findByUserId(Long userId); // Метод обновлен для работы с userId
-    List<Request> findByStatus(Request.RequestStatus requestStatus);
 }

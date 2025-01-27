@@ -8,7 +8,6 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "criminals")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class Criminal {
     @Id

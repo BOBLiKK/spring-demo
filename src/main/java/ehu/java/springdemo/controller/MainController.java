@@ -2,6 +2,7 @@ package ehu.java.springdemo.controller;
 
 import ehu.java.springdemo.entity.User;
 import ehu.java.springdemo.repository.UserRepository;
+import ehu.java.springdemo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MainController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -40,18 +41,27 @@ public class MainController {
     }
 
     @PostMapping("/do-register")
-    public String doRegister(@ModelAttribute("user") User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRole(User.Role.USER);
-        userRepository.save(user);
-        return "redirect:/login";
+    public String doRegister(@ModelAttribute("user") User user, Model model) {
+        try {
+            if (userService.findUserByLogin(user.getLogin()) != null) {
+                model.addAttribute("error", "This login already exists");
+                return "register";
+            }
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRole(User.Role.USER);
+            userService.save(user);
+            return "redirect:/login";
+        } catch (Exception e) {
+            model.addAttribute("error", "Registration error. Try again later.");
+            return "register";
+        }
     }
 
     @GetMapping("/redirect")
     public String redirectAfterLogin(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserName = authentication.getName();
-        User user = userRepository.findByLogin(currentUserName).orElse(null);
+        User user = userService.findUserByLogin(currentUserName);
         if (user != null) {
             if ("ADMIN".equals(user.getRole())) {
                 return "redirect:/admin/admin_dashboard";

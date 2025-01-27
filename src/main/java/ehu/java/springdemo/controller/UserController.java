@@ -10,7 +10,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Controller
@@ -26,6 +25,11 @@ public class UserController {
     @GetMapping("/user_dashboard")
     public String userDashboard(Model model) {
         return "user/user_dashboard";
+    }
+
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/logout";
     }
 
     @GetMapping("/create_request")

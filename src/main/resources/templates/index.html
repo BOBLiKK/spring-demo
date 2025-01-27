@@ -1,28 +1,19 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
-    <title th:text="${title}">Welcome</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQFm8sV8Qu9az7QpUUrP6TFfTG20+hfgGVx1FSpTXLfDQ24FDJ6LAX6Lx" crossorigin="anonymous">
+    <title th:text="${title}">Welcome</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
-<div th:replace="~{blocks/header :: header}"></div>
-
 <div class="container mt-5">
-    <div class="text-center">
-        <h1 class="display-4">Welcome!</h1>
-        <p class="lead">Please, select the action:</p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mt-4">
-            <button class="btn btn-primary btn-lg" onclick="location.href='/login'">Login</button>
-            <button class="btn btn-success btn-lg" onclick="location.href='/register'">Register</button>
-        </div>
+    <h1 class="text-center">Welcome!</h1>
+    <p class="text-center lead">Please select an action:</p>
+    <div class="d-flex flex-column align-items-center mt-4">
+        <a href="/login" class="btn btn-primary btn-lg mb-3">Login</a>
+        <a href="/register" class="btn btn-success btn-lg">Register</a>
     </div>
 </div>
-
-<!-- Bootstrap JS and Popper -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoYBq1sM9GaLJj1gD1F1DjP+GIKjlj0B4hZpYCEhRe+B4J1" crossorigin="anonymous"></script>
 </body>
 </html>

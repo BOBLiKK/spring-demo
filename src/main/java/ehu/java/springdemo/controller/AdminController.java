@@ -2,8 +2,8 @@ package ehu.java.springdemo.controller;
 
 import ehu.java.springdemo.entity.Criminal;
 import ehu.java.springdemo.entity.Request;
-import ehu.java.springdemo.repository.CriminalRepository;
-import ehu.java.springdemo.repository.RequestRepository;
+import ehu.java.springdemo.service.CriminalService;
+import ehu.java.springdemo.service.RequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
@@ -21,22 +21,25 @@ import java.util.Optional;
 @Secured("ADMIN")
 public class AdminController {
 
-
     @GetMapping("/admin_dashboard")
     public String adminDashboard(Model model) {
         return "admin/admin_dashboard";
     }
 
-    @Autowired
-    private CriminalRepository criminalRepository;
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/logout";
+    }
 
     @Autowired
-    private RequestRepository requestRepository;
+    private CriminalService criminalService;
 
+    @Autowired
+    private RequestService requestService;
 
     @GetMapping("/criminals")
     public String viewCriminals(Model model) {
-        List<Criminal> criminals = criminalRepository.findAll();
+        List<Criminal> criminals = criminalService.findAllCriminals();
         model.addAttribute("criminals", criminals);
         return "admin/criminals";
     }
@@ -48,20 +51,20 @@ public class AdminController {
     }
 
     @PostMapping("/criminals/add")
-    public String addCriminal(@ModelAttribute Criminal criminal,  @RequestParam("photoFile") MultipartFile photoFile) {
+    public String addCriminal(@ModelAttribute Criminal criminal, @RequestParam("photoFile") MultipartFile photoFile) {
         try {
             criminal.setPhoto(photoFile.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
             return "redirect:/error";
         }
-        criminalRepository.save(criminal);
+        criminalService.saveCriminal(criminal);
         return "redirect:/admin/criminals";
     }
 
     @GetMapping("/criminals/edit/{id}")
     public String editCriminalForm(@PathVariable Long id, Model model) {
-        Optional<Criminal> criminalOptional = criminalRepository.findById(id);
+        Optional<Criminal> criminalOptional = criminalService.findCriminalById(id);
         if (criminalOptional.isPresent()) {
             model.addAttribute("criminal", criminalOptional.get());
             return "admin/criminal-form";
@@ -72,7 +75,7 @@ public class AdminController {
 
     @PostMapping("/criminals/update/{id}")
     public String updateCriminal(@PathVariable Long id, @ModelAttribute Criminal criminal, @RequestParam("photoFile") MultipartFile photoFile) {
-        Optional<Criminal> criminalOptional = criminalRepository.findById(id);
+        Optional<Criminal> criminalOptional = criminalService.findCriminalById(id);
         if (criminalOptional.isPresent()) {
             Criminal existingCriminal = criminalOptional.get();
             existingCriminal.setFirstName(criminal.getFirstName());
@@ -91,8 +94,7 @@ public class AdminController {
                     return "redirect:/admin/criminals?error=PhotoUploadFailed";
                 }
             }
-
-            criminalRepository.save(existingCriminal);
+            criminalService.saveCriminal(existingCriminal);
             return "redirect:/admin/criminals?success=CriminalUpdated";
         } else {
             return "redirect:/admin/criminals?error=CriminalNotFound";
@@ -101,21 +103,20 @@ public class AdminController {
 
     @PostMapping("/criminals/delete/{id}")
     public String deleteCriminal(@PathVariable Long id) {
-        criminalRepository.deleteById(id);
+        criminalService.deleteCriminalById(id);
         return "redirect:/admin/criminals";
     }
 
-
     @GetMapping("/requests")
     public String viewRequests(Model model) {
-        List<Request> requests = requestRepository.findAll();
+        List<Request> requests = requestService.findAllRequests();
         model.addAttribute("requests", requests);
         return "admin/requests";
     }
 
     @PostMapping("/requests/{id}/approve")
     public String approveRequest(@PathVariable Long id) {
-        Optional<Request> requestOptional = requestRepository.findById(id);
+        Optional<Request> requestOptional = requestService.findRequestById(id);
         if (requestOptional.isPresent()) {
             Request request = requestOptional.get();
             request.setStatus(Request.RequestStatus.APPROVED);
@@ -129,20 +130,20 @@ public class AdminController {
                     request.getPhoto(),
                     request.getComment()
             );
-            criminalRepository.save(criminal);
-            requestRepository.save(request);
+            criminalService.saveCriminal(criminal);
+            requestService.saveRequest(request);
         }
         return "redirect:/admin/requests";
     }
 
     @PostMapping("/requests/{id}/decline")
     public String declineRequest(@PathVariable Long id, @RequestParam(required = false) String comment) {
-        Optional<Request> requestOptional = requestRepository.findById(id);
+        Optional<Request> requestOptional = requestService.findRequestById(id);
         if (requestOptional.isPresent()) {
             Request request = requestOptional.get();
             request.setStatus(Request.RequestStatus.DECLINED);
             request.setComment(comment);
-            requestRepository.save(request);
+            requestService.saveRequest(request);
         }
         return "redirect:/admin/requests";
     }
