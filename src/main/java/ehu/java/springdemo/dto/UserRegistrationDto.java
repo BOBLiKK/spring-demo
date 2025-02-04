@@ -17,6 +17,10 @@ public class UserRegistrationDto {
     @Pattern(regexp = ".*\\d.*", message = "Password must contain at least one digit. ")
     private String password;
 
+    @NotBlank(message = "Email cannot be empty. ")
+    @Pattern(regexp = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$", message = "Wrong email format. ")
+    private String email;
+
     @NotBlank(message = "Password confirmation required. ")
     private String confirmPassword;
 
@@ -42,5 +46,13 @@ public class UserRegistrationDto {
 
     public void setConfirmPassword(String confirmPassword) {
         this.confirmPassword = confirmPassword;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

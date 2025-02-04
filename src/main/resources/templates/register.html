@@ -92,7 +92,15 @@
             </div>
         </div>
 
-
+        <!-- Email Field -->
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" th:field="*{email}"
+                   th:classappend="${#fields.hasErrors('email')} ? 'error-field'">
+            <div th:if="${#fields.hasErrors('email')}" class="error-message">
+                <span th:each="err : ${#fields.errors('email')}" th:text="${err}"></span>
+            </div>
+        </div>
         <!-- Password Field -->
         <div>
             <label for="password">Password:</label>

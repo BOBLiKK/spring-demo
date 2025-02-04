@@ -31,8 +31,7 @@
     </div>
     <div class="mb-3">
       <label for="nationality" class="form-label">Nationality</label>
-      <input type="text" class="form-control" id="nationality" name="nationality"
-             th:value="${criminal.nationality}">
+      <div th:replace="blocks/countries-list.html"></div>
     </div>
     <div class="mb-3">
       <label for="reasonForWanted" class="form-label">Reason for Wanted</label>

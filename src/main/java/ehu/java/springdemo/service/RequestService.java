@@ -2,11 +2,8 @@ package ehu.java.springdemo.service;
 
 import ehu.java.springdemo.entity.Request;
 import ehu.java.springdemo.repository.RequestRepository;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,13 +19,6 @@ public class RequestService {
         this.requestRepository = requestRepository;
     }
 
-    /*
-    public List<Request> findByUserId(Long userId) {
-        return requestRepository.findByUserId(userId); // Обновлен вызов метода
-    }
-
-     */
-
     public void saveRequest(Request request) {
         requestRepository.save(request);
     }
@@ -37,15 +27,9 @@ public class RequestService {
         return requestRepository.findById(id);
     }
 
-    public byte[] getRequestPhotoById(Long id) {
-        return requestRepository.findPhotoByRequestId(id);
-    }
-
-
     public List<Request> findByUserId(Long userId) {
         List<Object[]> results = requestRepository.findRequestSummaryByUserId(userId);
         List<Request> requests = new ArrayList<>();
-
         for (Object[] row : results) {
             Request request = new Request();
             request.setId((Long) row[0]);
@@ -61,11 +45,8 @@ public class RequestService {
 
             requests.add(request);
         }
-
         return requests;
     }
-
-
 
     public List<Request> findAllRequests() {
         return requestRepository.findAll();

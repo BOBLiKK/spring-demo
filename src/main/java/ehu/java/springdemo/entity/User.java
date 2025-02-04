@@ -24,7 +24,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-
+    @Column
+    private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -55,57 +56,7 @@ public class User implements UserDetails {
         return login;
     }
 
-
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
     public String getRole(){
         return role.name();
-    }
-
-    public String getLogin(){
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
-
-
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

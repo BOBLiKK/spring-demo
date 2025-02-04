@@ -2,8 +2,6 @@ package ehu.java.springdemo.service;
 
 import ehu.java.springdemo.entity.User;
 import ehu.java.springdemo.repository.UserRepository;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -38,6 +36,10 @@ public class UserService implements org.springframework.security.core.userdetail
         return userRepository.findByLogin(login).orElse(null);
     }
 
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
     public Long getUserIdByLogin(String login) {
         User user = userRepository.findByLogin(login)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
@@ -47,7 +49,6 @@ public class UserService implements org.springframework.security.core.userdetail
     public User findById(Long userId) {
         return userRepository.findById(userId).orElse(null);
     }
-
 }
 
 

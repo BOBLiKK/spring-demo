@@ -8,11 +8,13 @@ public class UserResponseDto {
     private Long id;
     private String login;
     private String role;
+    private String email;
 
     public UserResponseDto(User user) {
         this.id = user.getId();
         this.login = user.getLogin();
         this.role = user.getRole();
+        this.email = user.getEmail();
     }
 
     public Long getId() {
@@ -37,6 +39,14 @@ public class UserResponseDto {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }
 
