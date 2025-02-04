@@ -1,61 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Requests</title>
+    <title>All Requests</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 <div class="container mt-5">
-    <h1 class="text-center">Requests</h1>
-    <div class="d-flex justify-content-between mb-3">
-        <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+    <h1 class="text-center mb-4">All Requests</h1>
+
+    <div class="d-flex justify-content-between mb-4">
+        <a href="/admin/admin_dashboard" class="btn btn-primary">
+            ← Back to Dashboard
+        </a>
     </div>
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Date of Birth</th>
-            <th>Nationality</th>
-            <th>Reason for Wanted</th>
-            <th>Reward</th>
-            <th>Photo</th>
-            <th>Comment</th>
-            <th>Submitted By</th>
-            <th>Status</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="request : ${requests}">
-            <td th:text="${request.id}"></td>
-            <td th:text="${request.firstName}"></td>
-            <td th:text="${request.lastName}"></td>
-            <td th:text="${request.dateOfBirth}"></td>
-            <td th:text="${request.nationality}"></td>
-            <td th:text="${request.reasonForWanted}"></td>
-            <td th:text="${request.reward} + ' USD'"></td>
-            <td>
-                <img th:src="@{'data:image/jpeg;base64,' + ${T(org.apache.tomcat.util.codec.binary.Base64).encodeBase64String(request.photo)}}"
-                     alt="Photo" style="width: 100px; height: auto;">
-            </td>
-            <td th:text="${request.comment}"></td>
-            <td th:text="${request.user_id.username}"></td>
-            <td th:text="${request.status}"></td>
-            <td>
-                <form th:action="@{'/admin/requests/' + ${request.id} + '/approve'}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
-                </form>
-                <form th:action="@{'/admin/requests/' + ${request.id} + '/decline'}" method="post" style="display:inline;">
-                    <button type="submit" class="btn btn-danger btn-sm">Decline</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+
+    <div th:if="${not #lists.isEmpty(requests)}">
+        <table class="table table-hover table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Photo</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Date of Birth</th>
+                <th>Nationality</th>
+                <th>Reason</th>
+                <th>Reward (USD)</th>
+                <th>Submitted By</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="request : ${requests}">
+                <td th:text="${request.id}"></td>
+                <td>
+                    <img th:if="${request.photo != null}"
+                         th:src="@{/admin/requests/photo/{id}(id=${request.id})}"
+                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;"
+                         alt="Criminal photo">
+                    <div th:unless="${request.photo != null}" class="text-muted">
+                        No photo
+                    </div>
+                </td>
+                <td th:text="${request.firstName}"></td>
+                <td th:text="${request.lastName}"></td>
+                <td th:text="${#temporals.format(request.dateOfBirth, 'dd-MM-yyyy')}"></td>
+                <td th:text="${request.nationality}"></td>
+                <td th:text="${request.reasonForWanted}"></td>
+                <td th:text="${request.reward}"></td>
+                <td th:text="${@userService.findById(request.userId)?.login} ?: 'N/A'"></td>
+                <td>
+                     <span th:classappend="${request.status == T(ehu.java.springdemo.entity.Request$RequestStatus).APPROVED} ? 'bg-success' :
+                     (${request.status == T(ehu.java.springdemo.entity.Request$RequestStatus).DECLINED} ? 'bg-danger' : 'bg-warning')">
+                         <span th:text="${request.status.name()}"></span>
+                    </span>
+                </td>
+                <td>
+                    <form th:action="@{'/admin/requests/' + ${request.id} + '/approve'}"
+                          method="post"
+                          class="d-inline">
+                        <button type="submit" class="btn btn-success btn-sm me-2">
+                            Approve
+                        </button>
+                    </form>
+                    <form th:action="@{'/admin/requests/' + ${request.id} + '/decline'}"
+                          method="post"
+                          class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm">
+                            Decline
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:if="${#lists.isEmpty(requests)}" class="alert alert-info">
+        <i class="bi bi-info-circle"></i> No requests found in the system
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

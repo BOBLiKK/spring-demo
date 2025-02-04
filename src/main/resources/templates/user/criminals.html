@@ -11,11 +11,12 @@
     <h1 class="text-center">Criminals List</h1>
     <div class="d-flex justify-content-between">
         <button class="btn btn-secondary" onclick="window.history.back()">Back</button>
+        <a href="/user/user_dashboard" class="btn btn-primary">Home</a>
     </div>
     <table class="table table-striped mt-4">
         <thead class="table-dark">
         <tr>
-            <th scope="col">#</th>
+            <th scope="col">Photo</th>
             <th scope="col">First Name</th>
             <th scope="col">Last Name</th>
             <th scope="col">Date of Birth</th>
@@ -26,7 +27,15 @@
         </thead>
         <tbody>
         <tr th:each="criminal : ${criminals}">
-            <th scope="row" th:text="${criminal.id}"></th>
+            <td>
+                <img th:if="${criminal.photo != null}"
+                     th:src="@{/user/criminals/photo/{id}(id=${criminal.id})}"
+                     style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;"
+                     alt="Criminal photo">
+                <div th:unless="${criminal.photo != null}" class="text-muted">
+                    No photo
+                </div>
+            </td>
             <td th:text="${criminal.firstName}"></td>
             <td th:text="${criminal.lastName}"></td>
             <td th:text="${criminal.dateOfBirth}"></td>

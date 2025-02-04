@@ -5,7 +5,11 @@ import ehu.java.springdemo.entity.Request;
 import ehu.java.springdemo.service.CriminalService;
 import ehu.java.springdemo.service.RequestService;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +24,8 @@ import java.util.Optional;
 @RequestMapping("/admin")
 @Secured("ADMIN")
 public class AdminController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
     @GetMapping("/admin_dashboard")
     public String adminDashboard(Model model) {
@@ -107,44 +113,68 @@ public class AdminController {
         return "redirect:/admin/criminals";
     }
 
+
+
     @GetMapping("/requests")
-    public String viewRequests(Model model) {
+    public String viewAllRequests(Model model) {
         List<Request> requests = requestService.findAllRequests();
         model.addAttribute("requests", requests);
         return "admin/requests";
     }
 
+
     @PostMapping("/requests/{id}/approve")
     public String approveRequest(@PathVariable Long id) {
         Optional<Request> requestOptional = requestService.findRequestById(id);
+
         if (requestOptional.isPresent()) {
             Request request = requestOptional.get();
-            request.setStatus(Request.RequestStatus.APPROVED);
-            Criminal criminal = new Criminal(
-                    request.getFirstName(),
-                    request.getLastName(),
-                    request.getDateOfBirth(),
-                    request.getNationality(),
-                    request.getReasonForWanted(),
-                    request.getReward(),
-                    request.getPhoto(),
-                    request.getComment()
-            );
+            Criminal criminal = new Criminal();
+            criminal.setFirstName(request.getFirstName());
+            criminal.setLastName(request.getLastName());
+            criminal.setDateOfBirth(request.getDateOfBirth());
+            criminal.setNationality(request.getNationality());
+            criminal.setReasonForWanted(request.getReasonForWanted());
+            criminal.setReward(request.getReward());
+            criminal.setPhoto(request.getPhoto());
+            criminal.setComment(request.getComment());
+
             criminalService.saveCriminal(criminal);
-            requestService.saveRequest(request);
+            requestService.updateRequestStatus(id, Request.RequestStatus.APPROVED);
         }
+
         return "redirect:/admin/requests";
     }
 
     @PostMapping("/requests/{id}/decline")
-    public String declineRequest(@PathVariable Long id, @RequestParam(required = false) String comment) {
-        Optional<Request> requestOptional = requestService.findRequestById(id);
-        if (requestOptional.isPresent()) {
-            Request request = requestOptional.get();
-            request.setStatus(Request.RequestStatus.DECLINED);
-            request.setComment(comment);
-            requestService.saveRequest(request);
-        }
+    public String declineRequest(@PathVariable Long id) {
+        requestService.updateRequestStatus(id, Request.RequestStatus.DECLINED);
         return "redirect:/admin/requests";
+    }
+
+    @GetMapping("/criminals/photo/{id}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getCriminalPhoto(@PathVariable Long id) {
+        Optional<Criminal> criminal = criminalService.findCriminalById(id);
+
+        if (criminal.isPresent() && criminal.get().getPhoto() != null) {
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, "image/*")
+                    .body(criminal.get().getPhoto());
+        }
+
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/requests/photo/{id}")
+    @ResponseBody
+    public ResponseEntity<byte[]> getRequestPhoto(@PathVariable Long id) {
+        Optional<Request> request = requestService.findRequestById(id);
+        if (request.isPresent() && request.get().getPhoto() != null) {
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, "image/*")
+                    .body(request.get().getPhoto());
+        }
+        return ResponseEntity.notFound().build();
     }
 }

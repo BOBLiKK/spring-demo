@@ -1,38 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Requests</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Requests</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 <div class="container mt-5">
-    <h1 class="text-center">My Requests</h1>
-    <table class="table table-striped mt-4">
-        <thead class="table-dark">
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
-            <th scope="col">Date of Birth</th>
-            <th scope="col">Reason</th>
-            <th scope="col">Status</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Заменить динамически получаемыми заявками -->
-        <tr th:each="request : ${requests}">
-            <th scope="row" th:text="${request.id}"></th>
-            <td th:text="${request.firstName}"></td>
-            <td th:text="${request.lastName}"></td>
-            <td th:text="${request.dateOfBirth}"></td>
-            <td th:text="${request.reasonForWanted}"></td>
-            <td th:text="${request.status}"></td>
-        </tr>
-        </tbody>
+  <h1 class="text-center mb-4">My Requests</h1>
+
+  <div class="d-flex justify-content-between mb-4">
+    <a href="/user/user_dashboard" class="btn btn-primary">
+      ← Back to Dashboard
+    </a>
+    <a href="/user/create_request" class="btn btn-success">+ New Request</a>
+  </div>
+
+  <div th:if="${not #lists.isEmpty(requests)}">
+    <table class="table table-hover">
+      <thead class="table-dark">
+      <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Date of Birth</th>
+        <th>Nationality</th>
+        <th>Reason</th>
+        <th>Reward (USD)</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="request : ${requests}">
+        <td th:text="${request.firstName}"></td>
+        <td th:text="${request.lastName}"></td>
+        <td th:text="${#temporals.format(request.dateOfBirth, 'dd-MM-yyyy')}"></td>
+        <td th:text="${request.nationality}"></td>
+        <td th:text="${request.reasonForWanted}"></td>
+        <td th:text="${request.reward}"></td>
+        <td>
+                        <span class="badge"
+                              th:classappend="${request.status == T(ehu.java.springdemo.entity.Request.RequestStatus).APPROVED} ? 'bg-success' :
+                          (${request.status == T(ehu.java.springdemo.entity.Request.RequestStatus).DECLINED} ? 'bg-danger' : 'bg-warning')">
+                         <span th:text="${request.status.name()}"></span>
+                        </span>
+        </td>
+      </tr>
+      </tbody>
     </table>
-    <a href="/user/user_dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+  </div>
+
+  <div th:if="${#lists.isEmpty(requests)}" class="alert alert-info">
+    No requests found. <a href="/user/create_request" class="alert-link">Create new request</a>
+  </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

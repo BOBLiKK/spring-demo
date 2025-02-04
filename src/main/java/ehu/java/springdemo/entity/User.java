@@ -3,12 +3,9 @@ package ehu.java.springdemo.entity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 import java.util.Collection;
 import java.util.List;
 
@@ -26,6 +23,8 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String password;
+
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -87,6 +86,8 @@ public class User implements UserDetails {
     public void setRole(Role role) {
         this.role = role;
     }
+
+
 
     @Override
     public boolean isAccountNonExpired() {

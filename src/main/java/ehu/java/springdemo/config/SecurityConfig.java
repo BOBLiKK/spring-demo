@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/do-login")
-                        .defaultSuccessUrl("/redirect", true) // Перенаправление на /redirect
+                        .defaultSuccessUrl("/redirect", true)
                         .permitAll()
                 )
                 .logout(logout -> logout

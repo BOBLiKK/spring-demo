@@ -39,7 +39,7 @@ public class Request {
     private String comment;
 
     @Column(name = "user_id", nullable = false)
-    private Long userId; // Исправлено имя поля
+    private Long userId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -49,6 +49,15 @@ public class Request {
         PENDING,
         DECLINED,
         APPROVED
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+
+    public Long getId() {
+        return id;
     }
 
     public String getFirstName() {
