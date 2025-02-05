@@ -1,11 +1,18 @@
 package ehu.java.springdemo.service;
 
 import ehu.java.springdemo.entity.Request;
+import ehu.java.springdemo.entity.User;
 import ehu.java.springdemo.repository.RequestRepository;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,5 +63,28 @@ public class RequestService {
         Request request = requestRepository.findById(id).orElseThrow();
         request.setStatus(status);
         requestRepository.save(request);
+    }
+
+    public void createRequest(Request request, Long userId, MultipartFile photoFile) throws IOException {
+        request.setPhoto(photoFile.getBytes());
+        request.setUserId(userId);
+        request.setStatus(Request.RequestStatus.PENDING);
+        requestRepository.save(request);
+    }
+
+    public List<Request> getUserRequests(HttpSession session) {
+        User currentUser = (User) session.getAttribute("currentUser");
+        if (currentUser == null) {
+            return Collections.emptyList();
+        }
+        return findByUserId(currentUser.getId());
+    }
+
+    public ResponseEntity<byte[]> getRequestPhotoResponse(Long id) {
+        return requestRepository.findById(id)
+                .map(request -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_TYPE, "image/*")
+                        .body(request.getPhoto()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

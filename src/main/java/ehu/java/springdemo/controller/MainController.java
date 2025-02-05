@@ -8,14 +8,13 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
-
+import static ehu.java.springdemo.constant.PageNameConstant.*;
+import static ehu.java.springdemo.constant.AttrbiuteNameConstant.*;
 
 @Slf4j
 @Controller
@@ -24,73 +23,52 @@ public class MainController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     @GetMapping("/")
     public String home(Model model) {
-        model.addAttribute("title", "Main page");
-        return "index";
+        model.addAttribute(TITLE, MAIN_PAGE);
+        return INDEX_PAGE;
     }
 
     @GetMapping("/login")
     public String login() {
-        return "login";
+        return LOGIN_PAGE;
     }
-
 
     @GetMapping("/register")
     public String register(Model model) {
-        model.addAttribute("user", new UserRegistrationDto());
-        return "register";
+        model.addAttribute(USER, new UserRegistrationDto());
+        return REGISTER_PAGE;
     }
 
     @PostMapping("/do-register")
-    public String doRegister(@ModelAttribute("user") @Valid UserRegistrationDto userDto, BindingResult bindingResult, Model model) {
-        if (userService.findUserByLogin(userDto.getLogin()) != null) {
-            bindingResult.rejectValue("login", "error.user", "This login has already taken. ");
+    public String doRegister(@ModelAttribute(USER) @Valid UserRegistrationDto userDto, BindingResult bindingResult) {
+        if (userService.validateRegistration(userDto, bindingResult)) {
+            return REGISTER_PAGE;
         }
-        if (!userDto.getPassword().equals(userDto.getConfirmPassword())) {
-            bindingResult.rejectValue("confirmPassword", "error.user", "Passwords do not match. ");
-        }
-        if (bindingResult.hasErrors()) {
-            return "register";
-        }
-        User user = new User();
-        user.setLogin(userDto.getLogin());
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setEmail(userDto.getEmail());
-        user.setRole(User.Role.USER);
-        userService.save(user);
-
-        return "redirect:/login";
+        userService.registerNewUser(userDto);
+        return REDIRECT_LOGIN;
     }
-
 
     @GetMapping("/user/info")
     @ResponseBody
     public UserResponseDto getUserInfo(Authentication authentication) {
-        User user = userService.findUserByLogin(authentication.getName());
-        return new UserResponseDto(user);
+        return userService.getUserInfo(authentication.getName());
     }
 
     @GetMapping("/redirect")
-    public String redirectAfterLogin(HttpSession session) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    public String redirectAfterLogin(HttpSession session, Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
-        String currentUserName = authentication.getName();
-        User user = userService.findUserByLogin(currentUserName);
+        User user = userService.findUserByLogin(authentication.getName());
         if (user == null) {
-            return "redirect:/login";
+            return REDIRECT_LOGIN;
         }
-        session.setAttribute("currentUser", user);
-        if ("ADMIN".equals(user.getRole())) {
-            return "redirect:/admin/admin_dashboard";
-        } else if ("USER".equals(user.getRole())) {
-            return "redirect:/user/user_dashboard";
-        }
-        return "redirect:/";
+        session.setAttribute(CURRENT_USER, user);
+        return switch (user.getRole()) {
+            case ADMIN_CAPS -> REDIRECT_ADMIN_DASHBOARD;
+            case USER_CAPS -> REDIRECT_USER_DASHBOARD;
+            default -> REDIRECT;
+        };
     }
 }

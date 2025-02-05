@@ -37,7 +37,6 @@ public class User implements UserDetails {
     }
 
     public User() {
-
     }
 
     public User(String login, String password, Role role) {
