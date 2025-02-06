@@ -1,5 +1,6 @@
 package ehu.java.springdemo.entity;
 
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @Setter
+@NoArgsConstructor
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,9 +36,6 @@ public class User implements UserDetails {
     public enum Role {
         USER,
         ADMIN
-    }
-
-    public User() {
     }
 
     public User(String login, String password, Role role) {
