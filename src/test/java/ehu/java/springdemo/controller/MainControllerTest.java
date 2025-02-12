@@ -71,6 +71,7 @@ class MainControllerTest {
                         .flashAttr("user", new UserRegistrationDto()))
                 .andExpect(status().isOk())
                 .andExpect(view().name("register"));
+
     }
 
     @WithMockUser(username = "testUser")
@@ -84,7 +85,6 @@ class MainControllerTest {
 
         UserResponseDto userResponseDto = new UserResponseDto(mockUser);
         when(userService.getUserInfo("testUser")).thenReturn(userResponseDto);
-
         mockMvc.perform(get("/user/info"))
                 .andExpect(status().isOk());
     }
