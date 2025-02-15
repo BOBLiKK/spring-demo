@@ -3,13 +3,12 @@ package ehu.java.springdemo.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Data
 @Getter
 @Setter
+@NoArgsConstructor
 public class UserRegistrationDto {
 
     @NotBlank(message = "Login cannot be empty. ")
