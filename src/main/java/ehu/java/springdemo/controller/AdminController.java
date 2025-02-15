@@ -2,14 +2,17 @@ package ehu.java.springdemo.controller;
 
 import ehu.java.springdemo.entity.Criminal;
 import ehu.java.springdemo.entity.Request;
+import ehu.java.springdemo.event.UserLogoutEvent;
 import ehu.java.springdemo.service.CriminalService;
 import ehu.java.springdemo.service.RequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -26,13 +29,18 @@ public class AdminController {
 
     private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
 
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
+
+
     @GetMapping("/admin_dashboard")
-    public String adminDashboard(Model model) {
+    public String adminDashboard() {
         return ADMIN_DASHBOARD_PAGE;
     }
 
     @GetMapping("/logout")
-    public String logout() {
+    public String logout(Authentication authentication) {
+        eventPublisher.publishEvent(new UserLogoutEvent(this, authentication.getName()));
         return REDIRECT_LOGOUT;
     }
 

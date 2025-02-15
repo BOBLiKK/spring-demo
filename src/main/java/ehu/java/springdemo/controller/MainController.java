@@ -3,10 +3,13 @@ package ehu.java.springdemo.controller;
 import ehu.java.springdemo.dto.UserRegistrationDto;
 import ehu.java.springdemo.dto.UserResponseDto;
 import ehu.java.springdemo.entity.User;
+import ehu.java.springdemo.event.UserLoginEvent;
+import ehu.java.springdemo.event.UserRegistrationEvent;
 import ehu.java.springdemo.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +25,9 @@ public class MainController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ApplicationEventPublisher eventPublisher;
 
     @GetMapping("/")
     public String home(Model model) {
@@ -46,6 +52,7 @@ public class MainController {
             return REGISTER_PAGE;
         }
         userService.registerNewUser(userDto);
+        eventPublisher.publishEvent(new UserRegistrationEvent(this, userDto.getLogin()));
         return REDIRECT_LOGIN;
     }
 
@@ -65,6 +72,8 @@ public class MainController {
             return REDIRECT_LOGIN;
         }
         session.setAttribute(CURRENT_USER, user);
+        String username = authentication.getName();
+        eventPublisher.publishEvent(new UserLoginEvent(this, username, user.getRole()));
         return switch (user.getRole()) {
             case ADMIN_CAPS -> REDIRECT_ADMIN_DASHBOARD;
             case USER_CAPS -> REDIRECT_USER_DASHBOARD;
